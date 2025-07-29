@@ -112,15 +112,12 @@
         },
         "demo": {
             "demo_every": 2000,
-            "demo_steps": 250,
-            "num_demos": 4,
+            "demo_steps": 100,
+            "num_demos": 1,
             "demo_cond": [
-                {"prompt": "A psychedelic Trap beat inspired by Travis Scott, built around swirling synth layers, reversed vocal chops, and heavy 808s. Set in D♯ minor at 136 BPM, it evokes a hazy, otherworldly vibe.", "seconds_start": 0, "seconds_total": 12},
-                {"prompt": "A soulful Trap/R&B fusion beat inspired by Rod Wave, featuring gospel-style piano chords, smooth vocal harmonies, and heartfelt melodic progressions. In the key of G minor at 138 BPM, this beat carries a powerful emotional weight.", "seconds_start": 0, "seconds_total": 160},
-                {"prompt": "A gritty, minimal Trap beat inspired by Kodak Black, driven by distorted basslines, sparse percussion, and dark, repetitive melodies. Set at 124 BPM in C minor, the beat creates a raw and streetwise energy.", "seconds_start": 0, "seconds_total": 190},
-                {"prompt": "A hard-hitting Trap beat inspired by GloRilla, with punchy drums, gritty bass, and aggressive energy. Set in A minor at 142 BPM.", "seconds_start": 0, "seconds_total": 180}
+                {"prompt": "A soulful Trap/R&B fusion beat inspired by Rod Wave, featuring gospel-style piano chords, smooth vocal harmonies, and heartfelt melodic progressions. In the key of G minor at 138 BPM, this beat carries a powerful emotional weight.", "seconds_start": 0, "seconds_total": 160}
             ],
-            "demo_cfg_scales": [3, 6, 9]
+            "demo_cfg_scales": [6]
         }
     },
     "lora": {
