@@ -121,16 +121,16 @@
                 {"prompt": "A hard-hitting Trap beat inspired by GloRilla, with punchy drums, gritty bass, and aggressive energy. Set in A minor at 142 BPM.", "seconds_start": 0, "seconds_total": 180}
             ],
             "demo_cfg_scales": [3, 6, 9]
-        },
-        "lora": {
-        "component_whitelist": ["transformer"],
-        "multiplier": 1.0,
-        "rank": 16,
-        "alpha": 16,
-        "dropout": 0,
-        "module_dropout": 0,
-        "lr": 1e-4,
-        "weight_decompose": true
         }
+    },
+    "lora": {
+    "component_whitelist": ["transformer"],
+    "multiplier": 1.0,
+    "rank": 16,
+    "alpha": 16,
+    "dropout": 0,
+    "module_dropout": 0,
+    "lr": 1e-4,
+    "weight_decompose": true
     }
 }
