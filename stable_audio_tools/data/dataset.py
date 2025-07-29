@@ -225,7 +225,7 @@ class SampleDataset(torch.utils.data.Dataset):
             for root_path in self.root_paths:
                 if root_path in audio_filename:
                     info["relpath"] = path.relpath(audio_filename, root_path)
-
+            info["test"] = os.path.join(*audio_filename.split(os.sep)[-2:])
             info["timestamps"] = (t_start, t_end)
             info["seconds_start"] = seconds_start
             info["seconds_total"] = seconds_total
