@@ -1,6 +1,6 @@
 {
     "model_type": "diffusion_cond",
-    "sample_size": 4194304,
+    "sample_size": 2097152,
     "sample_rate": 44100,
     "audio_channels": 2,
     "model": {
@@ -9,28 +9,34 @@
             "iterate_batch": true,
             "config": {
                 "encoder": {
-                    "type": "dac",
+                    "type": "oobleck",
+                    "requires_grad": false,
                     "config": {
                         "in_channels": 2,
+                        "channels": 128,
+                        "c_mults": [1, 2, 4, 8, 16],
+                        "strides": [2, 4, 4, 8, 8],
                         "latent_dim": 128,
-                        "d_model": 128,
-                        "strides": [4, 4, 8, 8]
+                        "use_snake": true
                     }
                 },
                 "decoder": {
-                    "type": "dac",
+                    "type": "oobleck",
                     "config": {
                         "out_channels": 2,
+                        "channels": 128,
+                        "c_mults": [1, 2, 4, 8, 16],
+                        "strides": [2, 4, 4, 8, 8],
                         "latent_dim": 64,
-                        "channels": 1536,
-                        "rates": [8, 8, 4, 4]
+                        "use_snake": true,
+                        "final_tanh": false
                     }
                 },
                 "bottleneck": {
                     "type": "vae"
                 },
                 "latent_dim": 64,
-                "downsampling_ratio": 1024,
+                "downsampling_ratio": 2048,
                 "io_channels": 2
             }
         },
@@ -38,18 +44,16 @@
             "configs": [
                 {
                     "id": "prompt",
-                    "type": "clap_text",
+                    "type": "t5",
                     "config": {
-                        "audio_model_type": "HTSAT-base",
-                        "enable_fusion": true,
-                        "clap_ckpt_path": "/path/to/clap.ckpt",
-                        "use_text_features": true,
-                        "feature_layer_ix": -2
+                        "t5_model_name": "t5-base",
+                        "max_length": 128,
+                        "enable_grad": true
                     }
                 },
                 {
                     "id": "seconds_start",
-                    "type": "int",
+                    "type": "number",
                     "config": {
                         "min_val": 0,
                         "max_val": 512
@@ -57,7 +61,7 @@
                 },
                 {
                     "id": "seconds_total",
-                    "type": "int",
+                    "type": "number",
                     "config": {
                         "min_val": 0,
                         "max_val": 512
@@ -67,41 +71,66 @@
             "cond_dim": 768
         },
         "diffusion": {
-            "type": "adp_cfg_1d",
             "cross_attention_cond_ids": ["prompt", "seconds_start", "seconds_total"],
+            "global_cond_ids": ["seconds_start", "seconds_total"],
+            "type": "dit",
             "config": {
-                "in_channels": 64,
-                "context_embedding_features": 768,
-                "context_embedding_max_length": 79,
-                "channels": 256,
-                "resnet_groups": 16,
-                "kernel_multiplier_downsample": 2,
-                "multipliers": [4, 4, 4, 5, 5],
-                "factors": [1, 2, 2, 4],
-                "num_blocks": [2, 2, 2, 2],
-                "attentions": [1, 3, 3, 3, 3],
-                "attention_heads": 16,
-                "attention_multiplier": 4,
-                "use_nearest_upsample": false,
-                "use_skip_scale": true,
-                "use_context_time": true
+                "io_channels": 64,
+                "embed_dim": 1536,
+                "depth": 24,
+                "num_heads": 24,
+                "cond_token_dim": 768,
+                "global_cond_dim": 1536,
+                "project_cond_tokens": false,
+                "transformer_type": "continuous_transformer"
             }
         },
         "io_channels": 64
     },
     "training": {
-        "learning_rate": 4e-5,
+        "use_ema": true,
+        "log_loss_info": false,
+        "optimizer_configs": {
+            "diffusion": {
+                "optimizer": {
+                    "type": "AdamW",
+                    "config": {
+                        "lr": 5e-5,
+                        "betas": [0.9, 0.999],
+                        "weight_decay": 1e-3
+                    }
+                },
+                "scheduler": {
+                    "type": "InverseLR",
+                    "config": {
+                        "inv_gamma": 1000000,
+                        "power": 0.5,
+                        "warmup": 0.99
+                    }
+                }
+            }
+        },
         "demo": {
             "demo_every": 2000,
             "demo_steps": 250,
             "num_demos": 4,
             "demo_cond": [
-                {"prompt": "A beautiful piano arpeggio", "seconds_start": 0, "seconds_total": 95},
-                {"prompt": "A tropical house track with upbeat melodies, a driving bassline, and cheery vibes", "seconds_start": 0, "seconds_total": 90},
-                {"prompt": "A cool 80s glam rock song with driving drums and distorted guitars", "seconds_start": 0, "seconds_total": 180},
-                {"prompt": "A grand orchestral arrangement with thunderous percussion, epic brass fanfares, and soaring strings, creating a cinematic atmosphere fit for a heroic battle.", "seconds_start": 0, "seconds_total": 60}
+                {"prompt": "A psychedelic Trap beat inspired by Travis Scott, built around swirling synth layers, reversed vocal chops, and heavy 808s. Set in D♯ minor at 136 BPM, it evokes a hazy, otherworldly vibe.", "seconds_start": 0, "seconds_total": 12},
+                {"prompt": "A soulful Trap/R&B fusion beat inspired by Rod Wave, featuring gospel-style piano chords, smooth vocal harmonies, and heartfelt melodic progressions. In the key of G minor at 138 BPM, this beat carries a powerful emotional weight.", "seconds_start": 0, "seconds_total": 160},
+                {"prompt": "A gritty, minimal Trap beat inspired by Kodak Black, driven by distorted basslines, sparse percussion, and dark, repetitive melodies. Set at 124 BPM in C minor, the beat creates a raw and streetwise energy.", "seconds_start": 0, "seconds_total": 190},
+                {"prompt": "A hard-hitting Trap beat inspired by GloRilla, with punchy drums, gritty bass, and aggressive energy. Set in A minor at 142 BPM.", "seconds_start": 0, "seconds_total": 180}
             ],
             "demo_cfg_scales": [3, 6, 9]
+        },
+        "lora": {
+        "component_whitelist": ["transformer"],
+        "multiplier": 1.0,
+        "rank": 16,
+        "alpha": 16,
+        "dropout": 0,
+        "module_dropout": 0,
+        "lr": 1e-4,
+        "weight_decompose": true
         }
     }
 }
