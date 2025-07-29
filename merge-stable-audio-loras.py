@@ -3,7 +3,7 @@ from loraw.network import LoRAMerger
 from stable_audio_tools.models.factory import create_model_from_config
 import json
 from stable_audio_tools.models.utils import load_ckpt_state_dict
-from stable_audio_tools.training.utils import copy_state_dict
+from stable_audio_tools.models.utils import copy_state_dict
 
 # Key prefixes and delimiters
 prefixes = {
