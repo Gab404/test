@@ -86,9 +86,6 @@ def main():
     # LORA: Prepare training
     if args.use_lora == 'true':
         lora.prepare_for_training(training_wrapper)
-        trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-        total_params = sum(p.numel() for p in model.parameters())
-        print(f"Trainable parameters: {trainable_params} / {total_params}")
 
     wandb_logger = pl.loggers.WandbLogger(project=args.name)
     wandb_logger.watch(training_wrapper)
@@ -147,7 +144,6 @@ def main():
             num_nodes = args.num_nodes,
             strategy=strategy,
             plugins=plugins,
-            precision=16,
             accumulate_grad_batches=args.accum_batches, 
             callbacks=callbacks,
             logger=wandb_logger,
