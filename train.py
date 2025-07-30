@@ -15,6 +15,8 @@ from loraw.network import create_lora_from_config
 from loraw.callbacks import LoRAModelCheckpoint, ReLoRAModelCheckpoint
 from pytorch_lightning.plugins import BitsandbytesPrecisionPlugin
 
+torch.set_float32_matmul_precision('high')
+
 class ExceptionCallback(pl.Callback):
     def on_exception(self, trainer, module, err):
         print(f'{type(err).__name__}: {err}')
